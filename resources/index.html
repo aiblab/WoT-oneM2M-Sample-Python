@@ -1,0 +1,1360 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+
+
+<meta charset="utf-8" />
+<!-- <link rel="apple-touch-icon" sizes="76x76"
+	href="/resrouces/img/apple-icon.png">
+<link rel="icon" type="image/png" sizes="96x96"
+	href="./img/favicon.png"> -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+<title>Wot PaaS Sample App</title>
+
+<meta
+	content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
+	name='viewport' />
+<meta name="viewport" content="width=device-width" />
+
+<!-- Animation library for notifications   -->
+<link href="./css/animate.min.css" rel="stylesheet" />
+
+<link href="./css/jquery-ui.min.css" rel="stylesheet" /> 
+<link href="./css/bootstrap.min.css" rel="stylesheet" /> 
+
+<!--  Paper Dashboard core CSS    -->
+<link href="./css/paper-dashboard.css" rel="stylesheet" />
+
+
+<!--  CSS for Demo Purpose, don't include it in your project     -->
+<link href="./css/common.css" rel="stylesheet" />
+<link href="./css/design.css" rel="stylesheet" />
+
+
+<!--  Fonts and icons     -->
+<link
+	href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
+	rel="stylesheet">
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300'
+	rel='stylesheet' type='text/css'>
+<link href="./css/themify-icons.css" rel="stylesheet">
+
+</head>
+<body>
+
+	<div class="wrapper">
+ 
+		<div>
+			
+			<nav class="navbar navbar-default" id="top">
+				<div class="container-fluid">
+					<div class="navbar-header"> 
+						<a class="navbar-brand top-title" href="">oneM2M 웹서비스 개발가이드( for Python )</a>
+					</div> 
+				</div>
+			</nav>
+
+			<div class="content" style="background-color: #fff;padding: 0px 50px;">
+				<div class="container-fluid">
+					<div class="row">
+						<p class="h5">1. Handypia IoT Platform 서비스 환경설정 정보 확인</p>
+						<dl class="row">
+							<dt class="col-sm-12">서비스 환경설정 정보 확인</dt>
+							<dd class="col-sm-12">
+								개방형 클라우드 플랫폼 환경 변수
+								<mark> VCAP_SERVICES</mark>
+								를 확인하여 <strong>Handypia IoT Platform</strong>서비스 정보에서
+								<mark>“onem2mBaseUrl”</mark>
+								정보를 확인 한다.
+							</dd>
+							<dd class="col-sm-12"
+								style="margin-top: 1em; margin-bottom: 1em;">
+								<pre><code>{ 
+  .....
+  "system_env_json": {
+    "VCAP_SERVICES": {
+      <mark>"HandyPIA-IoT-Platform"</mark>: [
+        {
+          "credentials": {
+            "password": "",
+            <mark>"onem2mBaseUrl"</mark>: "http://13.125.35.229:8080/~/paas-in-13-125-35-229/base",
+            "username": ""
+          }, 
+  .....
+}</code></pre>
+							</dd>
+						</dl>
+
+						<p class="h5">2. Library 정보</p>
+						<dl class="row">
+							<dt class="col-sm-12">
+                라이브러리 설치
+                  </dt> 
+							<dd class="col-sm-12" style="margin-top: 1em; margin-bottom: 1em;">
+								<pre><code>
+   > pip install onem2m -t . 
+                  </code></pre>
+						      <p style="text-indent: 1em;">
+                  pip install onem2m은Python 라이브러리 레파지토리에 등록된 onem2m을 로컬에 설치하는 명령이며, 
+                  ‘-t .’ 옵션은 현재 디렉토리 하위로 설치하라는 옵션이다.</p>
+							</dd>
+						</dl>
+						
+						<p class="h5">3. 서비스 환경 설정</p>
+						<p style="text-indent: 1em;">
+							<small>
+                웹 서비스 개발을 위해 제공되는 본 Library는 Python(3.6.3)기준으로 구현되어 있다.
+                해당 서비스가 구동되기 위해서는 라이브러리가 import되는 위치에 oneM2M.conf 설정파일이 생성되어 있어야 한다.
+							</small>
+						</p>
+						<dl class="row">
+							<dt class="col-sm-2">oneM2M.conf</dt>
+							<dd class="col-sm-12" style="margin-top: 1em; margin-bottom: 1em;">
+                <pre><code>
+  [DEFAULT]
+  oneM2M_scl_base_url=http://onem2m.iotmeca.com:8080/~/handypia-in/base
+  oneM2M_scl_base_origin=handypia-in
+  oneM2M_poa_url=
+                </code></pre>
+              </dd>
+            </dl>
+						<dl class="row">
+							<dt class="col-sm-12">oneM2M Bridge 사용 및 초기화</dt>
+							<dd class="col-sm-12" style="margin-top: 1em; margin-bottom: 1em;">
+                <pre><code>
+  from onem2m import AE, Constant
+
+  cli = AE.ClientLib()
+  …
+  cli.getLastValue(argObj)
+  …
+                </code></pre>
+							</dd>
+						</dl>
+						
+						<p class="h5">4. API 정보</p>
+						<p style="text-indent: 1em;">
+							<small>
+								본 개발가이드에 제공되는 내용을 oneM2M 서비스 사용 시 oneM2M 서비스에 제공되는 API를 쉽게 접근하기 위해 Bridge 를 제공하는 것으로 AE (Appilcation entiry), Sensor, Actuator 및 각 node 의 container instance 를 관리하고, 조회 기능을 제공한다. 이에 따라 oneM2M 에 대한 구조를 이해하고 관련 정보를 전달해야 한다.
+또한, oneM2M 을 지원하는 장비가 직접적으로 oneM2M 서버와 연결된 경우 해당 장치의 정보를 확인하고, 전송된 정보를 조회할 수 있도록 기능을 제공한다.
+							</small>
+						</p> 
+						<table class="table table-sm table-hover">
+							<thead>
+								<tr class="bg-primary">
+									<th scope="col">API(Method) Name</th>
+									<th scope="col">Return type</th>
+									<th scope="col">Descriptions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>createADN(JSONObject adn)</td>
+									<td>Integer</td>
+									<td>Application Dedicated Node 또는 Application Entity를 생성하고, 처리 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>checkDuplicated(JSONObject device)</td>
+									<td>Integer</td>
+									<td>ADN, sensor, actuator 등록 여부를 확인하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>registrySensor(JSONObject sensor)</td>
+									<td>Integer</td>
+									<td>Sensor(센서) node 를 등록하고, 그 처리 결과를 반환한다. Sensor(센서) Node 는 ADN 생성 후 Sensor 를 등록해야 한다.</td>
+								</tr>
+								<tr>
+									<td>updateSensor(JSONObject sensor)</td>
+									<td>Integer</td>
+									<td>Sensor(센서) node 의 정보 중 Lable 과 History Log Count 를 변경하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>deleteSensor(JSONObject sensor)</td>
+									<td>Integer</td>
+									<td>Sensor(센서) node 및 하위 Sensin Value(Container Instance) Node 를 삭제하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>registryActuator(JSONObject actuator)</td>
+									<td>Integer</td>
+									<td>Actuator (제어기) node 를 등록하고, 그 처리 결과를 반환한다. Actuator Node 는 ADN 생성 후 Actuator 를 등록해야 한다.</td>
+								</tr>
+								<tr>
+									<td>updateActuator(JSONObject actuator)</td>
+									<td>Integer</td>
+									<td>Actuator(제어기) node 의 정보 중 Lable 과 History Log Count 를 변경하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>deleteActuator(JSONObject actuator)</td>
+									<td>Integer</td>
+									<td>Actuator(제어기) node 및 하위 Actuation result(Container Instance) Node 를 삭제하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>sendSensingReport(JSONObject report)</td>
+									<td>Integer</td>
+									<td>Sensor(센서) node 의 센싱 결과 정보를 보고 하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>sendActuatorResult(JSONObject report)</td>
+									<td>Integer</td>
+									<td>Actuator(제어기) node 의 제어 결과 정보를 보고 하고, 그 결과를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>getDevice(JSONObject json)</td>
+									<td>JSONObject</td>
+									<td>등록된 Node 의 단일 정보를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>getDeviceAll(JSONObject json)</td>
+									<td>JSONObject</td>
+									<td>등록 ADN 의 전체 Node 정보를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>getLastValue(JSONObject json)</td>
+									<td>JSONObject</td>
+									<td>Sensor(센서) 또는 Actuator(제어기) node 의 등록된 센싱 결과 중 마지막 센싱 정보를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>getValues(JSONObject json)</td>
+									<td>JSONArray</td>
+									<td>Sensor(센서) 또는 Actuator(제어기) node 의 등록된 모든 센싱 정보를 반환한다.</td>
+								</tr>
+								<tr>
+									<td>getADNAll()</td>
+									<td>JSONArray</td>
+									<td>CSL(Infra node)에 등록된 모든 ADN 목록을 반환한다.</td>
+								</tr> 
+							</tbody>
+						</table>
+						<div class="json-obj-list-div">
+							<p style="font-weight:700;font-size:13px !important;">4.1 createADN</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td><p>ADN(Application Dedicated Node) 을 생성하기 위한 아이디를 입력한다. oneM2M 서버에서 해당 ID 는 중복되지 않아야 하므로, <mark>checkDuplication</mark>을 활용하여 중복체크 후 사용등록 처리 한다.
+											<mark>ID 는 반드시 ‘S’ 또는 ‘C’ 가 prefix 로 사용되어야 한다.</mark></p>
+											<p>EX> ID : raspberry > <mark>S</mark>raspberry</p>
+										</td> 
+									</tr>
+									<tr>
+										<td>ADN.NAME</td>
+										<td>String</td>
+										<td>ADN(Application Dedicated Node) 을 생성하기 위한 명칭을 입력한다.</td> 
+									</tr> 
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 201</td>
+										<td>oneM2M 서버에 ADN(Application Dedicated Node) 을 생성</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>서버 등록 시 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['ADN.NAME'] = 'Multisensor Device'
+json['CHECK.URI'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.checkDuplicated(json)
+if result == 404:
+    result = cli.createADN(json)
+    print('> Result - create ADN: ', result)
+elif result == 200:
+    print('> Result - already registered ADN: ', result)
+else:
+    print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+							
+							<p style="font-weight:700;font-size:13px !important;">4.2 checkDuplicated</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>CHECK.ID</td>
+										<td>String</td>
+										<td><p>중복체크는 ADN, Sensor, Actuator 를 모두 검사가 가능하고, oneM2M 에서는 Hierarchy 구조이기 때문에 ADN 과 ADN 하위의 Sensor 또는 Actuator를 URI 로 입력하여 체크한다. </p>
+											<p>EX> </p>
+											<p>- ADN 중복 체크할 경우 : 	CHECK.ID : “{ADN.ID}”</p>
+											<p>- SENSOR.ID 를 중복 체크할 경우 : CHECK.ID : “{ADN.ID}/{SENSOR.ID}”</p>
+										</td> 
+									</tr>
+									<tr>
+										<td>ADN.NAME</td>
+										<td>String</td>
+										<td>ADN(Application Dedicated Node) 을 생성하기 위한 명칭을 입력한다.</td> 
+									</tr> 
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 200</td>
+										<td>oneM2M 서버에 이미 등록된 ID 가 있음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>oneM2M 서버에 이미 등록된 ID 가 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>서버 등록 시 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.checkDuplicated(json)
+if result == 404:
+print('> Result – AND is not existing: ', result)
+elif result == 200:
+    print('> Result - already registered ADN: ', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+							
+							<p style="font-weight:700;font-size:13px !important;">4.3 registrySensor</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>SENSOR.ID</td>
+										<td>String</td>
+										<td>등록된 ADN 하위에 센서를 등록하기 위한 아이디를 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>SENSOR.NAME</td>
+										<td>String</td>
+										<td>센서를 등록하기 위한 명칭을 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>SENSOR.HISTORY</td>
+										<td>String</td>
+										<td>
+										<p>등록된 센서에 센싱 리포트 등록 시 oneM2M 서버에서 히스토리 카운트를 입력한다. “10” 으로 입력된 경우 센싱리포트 결과가 10개까지 이력이 남는다.</p>
+										<p><mark>getValues</mark>를 요청하는 경우 해당 히스토리 카운트에 등록된 만큼 결과값을 받을 수 있다.</p>
+</td> 
+									</tr> 
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 201</td>
+										<td>ADN 하위에 해당 센서가 등록됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>서버 등록 시 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['SENSOR.ID'] = '3300-1'
+json['SENSOR.NAME'] = 'Temperature'
+json['SENSOR.HISTORY'] = 10
+json['CHECK.URI'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.checkDuplicated(json)
+if result == 404:
+    result = cli.registrySensor(json)
+    print('> Result - create Sensor: ', result)
+elif result == 200:
+    print('> Result - already registered Sensor: ', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+							
+							
+							<p style="font-weight:700;font-size:13px !important;">4.4 updateSensor</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>SENSOR.ID</td>
+										<td>String</td>
+										<td>
+											<p>센서 정보를 변경하기 위한 아이디를 입력한다.</p>
+											<p><mark>이미 등록된 SENSOR.ID 는 변경할 수 없다.</mark></p>
+										</td> 
+									</tr> 
+									<tr>
+										<td>SENSOR.NAME</td>
+										<td>String</td>
+										<td>센서명을 변경하기 위한 명칭을 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>SENSOR.HISTORY</td>
+										<td>String</td>
+										<td>센서의 히스토리 카운트 입력한다.</td> 
+									</tr> 
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 200</td>
+										<td>센서 정보가 변경 됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나, ADN 하위의 SENSOR 가 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>변경 요청 시 시스템 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['SENSOR.ID'] = '3303-1'
+json['SENSOR.NAME'] = 'Temperature'
+json['SENSOR.HISTORY'] = 10
+json['CHECK.URI'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.updateSensor(json)
+if result == 200:
+print('> Result - update Sensor: ', result)
+else: 
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+							
+							
+							
+							
+							<p style="font-weight:700;font-size:13px !important;">4.5 deleteSensor</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>SENSOR.ID</td>
+										<td>String</td>
+										<td>센서 삭제하기 위한 아이디를 입력한다.</td> 
+									</tr>  
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 200</td>
+										<td>센서가 삭제 됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나, ADN 하위의 SENSOR 가 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>변경 요청 시 시스템 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['SENSOR.ID'] = '3303-1'
+result = cli.deleteSensor(json)
+if result == 200:
+print('> Result - delete Sensor: ', result)
+else: 
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+						
+							
+							
+							<p style="font-weight:700;font-size:13px !important;">4.6 registryActuator</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>ACTUATOR.ID</td>
+										<td>String</td>
+										<td>등록된 ADN 하위에 제어기를 등록하기 위한 아이디를 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>ACTUATOR.NAME</td>
+										<td>String</td>
+										<td>제어기 등록하기 위한 명칭을 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>ACTUATOR.HISTORY</td>
+										<td>String</td>
+										<td>
+											<p>등록된 제이거에 제어 결과 리포트 등록 시 oneM2M 서버에서 히스토리 카운트를 입력한다. “10” 으로 입력된 경우 제어 결과가 10개까지 이력이 남는다.</p>
+											<p><mark>getValues</mark> 를 요청하는 경우 해당 히스토리 카운트에 등록된 만큼 결과값을 받을 수 있다.</p>
+										</td> 
+									</tr> 
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 201</td>
+										<td>ADN 하위에 해당 제어기가 등록됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>
+											<p>서버 등록 시 에러 발생</p>
+											<p>ADN 하위 등록 시 ACTUATOR.ID 가 중복된 경우 </p>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['ACTUATOR.ID'] = '3300-1'
+json['ACTUATOR.NAME'] = 'Switch'
+json['ACTUATOR.HISTORY'] = 10
+json['CHECK.URI'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.checkDuplicated(json)
+if result == 404:
+    result = cli.regostryActuator (json)
+    print('> Result - create Actuator: ', result)
+elif result == 200:
+    print('> Result - already registered Actuator: ', result)
+else: 
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+							
+							
+							<p style="font-weight:700;font-size:13px !important;">4.7 updateActuator</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>ACTUATOR.ID</td>
+										<td>String</td>
+										<td>
+											<p>제어기 정보를 변경하기 위한 아이디를 입력한다.</p>
+											<p><mark>이미 등록된 ACTUATOR.ID 는 변경할 수 없다.</mark></p>
+										</td> 
+									</tr> 
+									<tr>
+										<td>ACTUATOR.NAME</td>
+										<td>String</td>
+										<td>제어기 명을 변경하기 위한 명칭을 입력한다</td> 
+									</tr> 
+									<tr>
+										<td>ACTUATOR.HISTORY</td>
+										<td>String</td>
+										<td>제어기의 히스토리 카운트 입력한다.</td> 
+									</tr> 
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 200</td>
+										<td>센서 정보가 변경 됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나, ADN 하위의 ACTUATOR 가 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>변경 요청 시 시스템 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['ACTUATOR.ID'] = '3300-1'
+json['ACTUATOR.NAME'] = 'Switch'
+json['ACTUATOR.HISTORY'] = 10
+json['CHECK.URI'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.updateActuator(json)
+if result == 200:
+    print('> Result - update Actuator: ', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>	
+							
+							<p style="font-weight:700;font-size:13px !important;">4.8 deleteActuator</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>ACTUATOR.ID</td>
+										<td>String</td>
+										<td>제어기를 삭제하기 위한 아이디를 입력한다.</td> 
+									</tr>  
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 200</td>
+										<td>제어기가 삭제 됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나, ADN 하위의 ACTUATOR 가 없음</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>변경 요청 시 시스템 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['ACTUATOR.ID'] = '3300-1'
+result = cli.deleteActuator(json)
+if result == 200:
+    print('> Result - delete Actuator: ', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							<p style="font-weight:700;font-size:13px !important;">4.9 sendSensingReport</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>SENSOR.ID</td>
+										<td>String</td>
+										<td>등록된 센서 아이디를 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>SENSOR.NAME</td>
+										<td>String</td>
+										<td>센싱된 이름을 추가 한다.</td> 
+									</tr>
+									<tr>
+										<td>SENSOR.VALUE</td>
+										<td>String</td>
+										<td>센싱된 결과 값을 입력한다.</td> 
+									</tr>   
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 201</td>
+										<td>센싱 리포트가 등록됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나 센서가 없는 경우</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>서버 등록 시 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['SENSOR.ID'] = '3303-1'
+json['SENSOR.NAME'] = 'Temperature'
+json['SENSOR.VALUE'] = '25.3'
+result = cli.sendSensingReportjson)
+if result == 201:
+print('> Result – Posted sensing report: ', result)
+else: 
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+								
+							<p style="font-weight:700;font-size:13px !important;">4.10 sendActuatorResult</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>ACTUATOR.ID</td>
+										<td>String</td>
+										<td>등록된 제어기 아이디를 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>ACTUATOR.NAME</td>
+										<td>String</td>
+										<td>제어 이름을 추가 한다.</td> 
+									</tr>
+									<tr>
+										<td>ACTUATOR.VALUE</td>
+										<td>String</td>
+										<td>제어 결과 값을 입력한다.</td> 
+									</tr>   
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 201</td>
+										<td>제어 결과가 등록됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나 제어기가 없는 경우</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>서버 등록 시 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['ACTUATOR.ID'] = '3300-1'
+json['ACTION.NAME'] = 'ONOFF'
+json['ACTION.VALUE'] = 'off'
+result = cli.sendActuatorResult (json)
+if result == 201:
+    print('> Result – posted action result: ', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+								
+							<p style="font-weight:700;font-size:13px !important;">4.11 sendActuation</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>ACTUATOR.ID</td>
+										<td>String</td>
+										<td>등록된 제어 아이디를 입력한다.</td> 
+									</tr>  
+									<tr>
+										<td>ACTUATOR.VALUE</td>
+										<td>String</td>
+										<td>제어기의 제어값을 입력한다.</td> 
+									</tr>   
+								</tbody>
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" colspan="2">CODE</th> 
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td  colspan="2"> 201</td>
+										<td>제어 결과가 등록됨</td>
+									</tr>
+									<tr>
+										<td  colspan="2">404</td>
+										<td>등록된 ADN 이 없거나 제어기가 없는 경우</td>
+									</tr>
+									<tr>
+										<td  colspan="2">500</td>
+										<td>서버 등록 시 에러 발생</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['ACTUATOR.ID'] = '3300-1'
+json['ACTUATOR.VALUE'] = 'off'
+result = cli.sendActuation(json)
+if result == 201:
+    print('> Result – send actuation: ', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+								
+							<p style="font-weight:700;font-size:13px !important;">4.12 getDevice</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr>
+									<tr>
+										<td>SENSOR.ID</td>
+										<td>String</td>
+										<td>등록된 센서  아이디를 입력한다.</td> 
+									</tr>   
+								  	<tr>
+							  			<td colspan="3"><pre style="background: #fff"><code>{
+    "m2m:cnt": {
+        "rn": "3301-1",
+        "ty": 3,
+        "ri": "/handypia-in/48CNVkpVCS85VsfyFUkLpD",
+        "pi": "/handypia-in/S0.2.481.2.100.0.73.74_AE",
+        "ct": "20170822T080258",
+        "lt": "20170826T064319",
+        "lbl": "luxometer",
+        "et": "99991231T235959",
+        "st": 506,
+        "cr": "S0.2.481.2.100.0.73.74_AE",
+        "mni": 10,
+        "cni": 0,
+        "cbs": 0,
+        "ch": []
+    }
+}</code></pre>
+</td>
+								  	</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['SENSOR.ID'] = '3303-1'
+result = cli.getDevice(json)
+if result:
+    print('> Result – device', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							
+							<p style="font-weight:700;font-size:13px !important;">4.13 getDeviceAll</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr> 
+								  	<tr>
+							  			<td colspan="3"><pre style="background: #fff"><code>{
+    "m2m:ae": {
+        "rn": "S0.2.481.2.100.0.73.74_AE",
+        "ty": 2,
+        "ri": "/handypia-in/S0.2.481.2.100.0.73.74_AE",
+        "pi": "/handypia-in/acE5dlrnnUa9rRfI886F1x",
+        "ct": "20170822T080258",
+        "lt": "20170825T063827",
+        "lbl": "TI Sensortag",
+        "et": "99991231T235959",
+        "apn": "S0.2.481.2.100.0.73.74_AE",
+        "api": "S0.2.481.2.100.0.73.74_AE",
+        "aei": "/S0.2.481.2.100.0.73.74_AE",
+        "poa": "http://10.30.5.63:8080/actuator/S0.2.481.2.100.0.73.74_AE",
+        "rr": false,
+        "csz": "application/json",
+        "ch": [
+            {
+                "nm": "3301-1",
+                "typ": 3,
+                "value": "/handypia-in/48CNVkpVCS85VsfyFUkLpD"
+            },
+            {
+                "nm": "3303-1",
+                "typ": 3,
+                "value": "/handypia-in/8BeQ1Dn1sDu6KvluGOKneV"
+            },
+            {
+                "nm": "3303-2",
+                "typ": 3,
+                "value": "/handypia-in/arbudVjzTQY81Zs0hx99MY"
+            },
+            {
+                "nm": "3303-3",
+                "typ": 3,
+                "value": "/handypia-in/atDPeOegS407Rc6b8okJ2V"
+            },
+            ……
+        ]
+    }
+}
+</code></pre>
+</td>
+								  	</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.getDeviceAll(json)
+if result:
+    print('> Result – devices', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							<p style="font-weight:700;font-size:13px !important;">4.14 getLastValue</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>ID</td>
+										<td>String</td>
+										<td>등록된 센서/제어기 아이디를 입력한다.</td> 
+									</tr> 
+								  	<tr>
+							  			<td colspan="3"><pre style="background: #fff"><code>{
+	"resourceId":"luxometer",
+	"time":"20180115133630",
+	"value":{
+		"luxometer":"224.4"
+	},
+	"thingId":"S0.2.481.2.100.0.73.74_AE"
+} 
+</code></pre>
+</td>
+								  	</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+json['SENSOR.ID'] = '3303-1'
+result = cli.getLastValue(json)
+if result:
+    print('> Result – value', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							<p style="font-weight:700;font-size:13px !important;">4.15 getValues</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ADN.ID</td>
+										<td>String</td>
+										<td>등록된 ADN(Application Dedicated Node) 아이디를 입력한다.</td> 
+									</tr> 
+									<tr>
+										<td>ID</td>
+										<td>String</td>
+										<td>등록된 센서/제어기 아이디를 입력한다.</td> 
+									</tr> 
+								  	<tr>
+							  			<td colspan="3"><pre style="background: #fff"><code>[
+	{
+		" resourceId " : "luxometer" ,
+		" time " : "20180115133120" ,
+		" value " : {
+			" luxometer " : "239.4"
+		} ,
+		" thingId " : "S0.2.481.2.100.0.73.74_AE"
+	} ,
+	{
+		" resourceId " : "luxometer" ,
+		" time " : "20180115133130" ,
+		" value " : {
+			" luxometer " : "238.2"
+		} ,
+		" thingId " : "S0.2.481.2.100.0.73.74_AE"
+	} ,
+	{
+		" resourceId " : "luxometer" ,
+		" time " : "20180115133140" ,
+		" value " : {
+			" luxometer " : "239.1"
+		} ,
+		" thingId " : "S0.2.481.2.100.0.73.74_AE"
+	}, ......
+] 
+</code></pre>
+</td>
+								  	</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+json = {}
+json['ADN.ID'] = 'S0.2.481.2.100.0.41.43_AE_test001'
+result = cli.getValues(json)
+if result:
+    print('> Result – values', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							<p style="font-weight:700;font-size:13px !important;">4.16 getADNALL</p> 
+							<table class="table table-sm">
+								<thead>
+									<tr class="bg-info">
+										<th scope="col" style="width:15%">Name</th>
+										<th scope="col" style="width:15%">Type</th>
+										<th scope="col">Descriptions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td colspan="3" style="text-align:center;">JSONObject Parameters 없음.</td> 
+									</tr>  
+								  	<tr>
+							  			<td colspan="3"><pre style="background: #fff"><code>[
+	{
+		"typ":2,
+		"value":"\/csitso-in\/CTEST00000",
+		"nm":"CTEST00000"
+	},
+	{
+		"typ":2,
+		"value":"\/csitso-in\/S0000001",
+		"nm":"S0000001"
+	},......
+] 
+</code></pre>
+</td>
+								  	</tr>
+									<tr>
+										<td colspan="3">
+<pre><code>
+from onem2m import AE
+
+cli = AE.ClientLib()
+
+result = cli.getADNAll()
+if result.length > 0:
+    print('> Result – ADN list', result)
+else:
+print('> Result - Internal server error: ', result)
+
+</code></pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+</body> 
+
+</html>
+
+ 
+						

@@ -1,0 +1,7 @@
+---
+applications:
+- name: onem2m-python-sample-app2      # 애플리케이션 이름
+  buildpack: python_buildpack    # 빌드팩 이름
+  memory: 512M                # 애플리케이션 메모리 사이즈
+  instances: 1                   # 애플리케이션 인스턴스 개수
+  command: python webSvr.py

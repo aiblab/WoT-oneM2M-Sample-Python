@@ -1,0 +1,4 @@
+onem2m==0.3.3
+configparser==3.5.0
+request==1.0.2
+requests==2.18.4

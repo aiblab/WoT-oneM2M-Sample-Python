@@ -1,0 +1,52 @@
+Metadata-Version: 2.1
+Name: onem2m
+Version: 0.3.3
+Summary: oneM2M ADN Client Lib
+Home-page: https://github.com/kimkeehwan/onem2m_adn_lib_python
+Author: Kim keehwan
+Author-email: kimkeehwan@handysoft.co.kr
+License: MIT
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5
+
+oneM2M Application Entity Node Client Library
+Python 3.6 tested
+
+
+oneM2M.conf
+[DEFAULT]
+oneM2M_scl_base_url=http://13.125.35.229:8080/~/paas-in-13-125-35-229/base
+oneM2M_scl_base_origin=paas-in-13-125-35-229
+oneM2M_poa_url=
+
+from onem2m import AE, Constant
+
+cli = AE.ClientLib()
+
+arg = {Constant.CONST.ADN.ID:'S111115', Constant.CONST.ADN.NAME:'S111115', Constant.CONST.CHECK.URI:"S111115",
+    Constant.CONST.SENSOR.ID:'111111', Constant.CONST.SENSOR.NAME:'Temp', Constant.CONST.SENSOR.HISTORY:11}
+
+arg1 = {Constant.CONST.ADN.ID:'S111115', Constant.CONST.SENSOR.ID:'111111',Constant.CONST.SENSOR.NAME:'Temp',
+    Constant.CONST.SENSING.NAME:'R1',Constant.CONST.SENSING.VALUE:32}
+
+arg2 = {Constant.CONST.ADN.ID:'S111115',Constant.CONST.ID:'111111'}
+
+print(cli.checkDuplicated(arg))
+
+print(cli.createADN(arg))
+
+print(cli.registrySensor(arg))
+
+print(cli.sendSensingReport(arg1))
+
+print(cli.getLastValue(arg2))
+
+print(cli.getValues(arg2))
+
+print(cli.getADNAll())
+

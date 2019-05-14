@@ -1,0 +1,86 @@
+.ui-dialog {
+	padding: 0;
+	background: #fff;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-align: start;
+	align-items: flex-start;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+	padding: 15px;
+	border-bottom: 1px solid #e9ecef;
+	border-top-left-radius: .3rem;
+	border-top-right-radius: .3rem;
+}
+
+.ui-dialog .ui-dialog-title {
+	margin-bottom: 0;
+	line-height: 1.5;
+	font-size: 1.25rem;
+}
+
+.ui-dialog .ui-widget-header {
+	background: #fff;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+	background: #fff;
+}
+
+.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+	background: #fff;
+	border: none;
+}
+
+.ui-dialog .ui-dialog-titlebar .close {
+	float: right;
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+	opacity: .5;
+	vertical-align: middle;
+	padding-top: 5px;
+}
+
+.ui-dialog .ui-dialog-content {
+	margin: 30px;
+}
+
+.ui-widget-overlay {
+	background: opacity .15s linear;
+}
+
+.close {
+	cursor: pointer;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+	background-color: none !important;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+	background-color: transparent !important;
+}
+
+.navbar-default {
+	background: #eee;
+	border-bottom: 1px solid rgba(102, 97, 91, 0.3);
+}
+ 
+.json-obj-list-div, .json-obj-list-div p,.json-obj-list-div pre code {
+	font-size: 11px !important;
+	margin:5px 0;
+}
+
+.json-obj-list-div .table > thead > tr > th,
+.json-obj-list-div .table > tbody > tr > th,
+.json-obj-list-div .table > tfoot > tr > th, 
+.json-obj-list-div .table > thead > tr > td, 
+.json-obj-list-div .table > tbody > tr > td, 
+.json-obj-list-div .table > tfoot > tr > td{
+	padding: 7px;
+}
